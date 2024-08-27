@@ -16,11 +16,11 @@ struct ContentView: View {
         let filteredCocktails = self.cocktailListVM.filteredCocktails()
         
         NavigationView{
-            VStack{
-                CocktailSegmentButton(cocktailType: self.$cocktailListVM.selectedCocktailType)
-                CocktailListView(filteredCocktails: filteredCocktails)
-                    .navigationBarTitle(Text(self.cocktailListVM.selectedTypeTitle()), displayMode: .inline)
-            }
+                VStack{
+                    CocktailSegmentButton(cocktailType: self.$cocktailListVM.selectedCocktailType)
+                    CocktailListView(filteredCocktails: filteredCocktails, cocktailsTypeSelected: self.cocktailListVM.selectedTypeTitle())
+                }
+                .navigationBarTitle(Text(self.cocktailListVM.selectedTypeTitle()), displayMode: .inline)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -39,5 +39,6 @@ struct CocktailSegmentButton: View {
             }
         }
         .pickerStyle(SegmentedPickerStyle())
+        .padding()
     }
 }

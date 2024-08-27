@@ -33,5 +33,5 @@ struct Cocktail: Decodable{
     let preparationMinutes: Int
     let imageName: String
     let ingredients: [String]
-    let isFavourite: Bool?
+    var isFavourite: Bool?
 }

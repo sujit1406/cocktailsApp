@@ -9,9 +9,13 @@
 import Foundation
 
 
-struct CocktailViewModel {
+class CocktailViewModel: ObservableObject {
     
-    let cocktail: Cocktail
+    init(cocktail: Cocktail) {
+        self.cocktail = cocktail
+    }
+    
+    @Published var cocktail: Cocktail
     
     var id: String {
         return self.cocktail.id
@@ -23,6 +27,10 @@ struct CocktailViewModel {
     
     var type: CocktailType {
         return self.cocktail.type
+    }
+    
+    var typeString: String {
+        return self.cocktail.type.rawValue
     }
     
     var shortDescription: String {
@@ -43,6 +51,19 @@ struct CocktailViewModel {
     
     var ingredients: [String] {
         return self.cocktail.ingredients
+    }
+    
+    var isFavorite: Bool {
+        get{
+            return self.cocktail.isFavourite ?? false
+        }
+        set{
+            self.cocktail.isFavourite = newValue
+        }
+    }
+    
+    func toggleFavorite() {
+        self.cocktail.isFavourite = !(self.cocktail.isFavourite ?? false)
     }
 
 }
