@@ -6,16 +6,21 @@
 //  Created by Sujith Antony on 26/08/24.
 //
 
-import Foundation
+import Combine
 
 
-class CocktailViewModel: ObservableObject {
+class CocktailViewModel: ObservableObject, Equatable {
+    static func == (lhs: CocktailViewModel, rhs: CocktailViewModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    
+   @Published var cocktail: Cocktail
     
     init(cocktail: Cocktail) {
         self.cocktail = cocktail
     }
-    
-    @Published var cocktail: Cocktail
+   
     
     var id: String {
         return self.cocktail.id
@@ -54,16 +59,11 @@ class CocktailViewModel: ObservableObject {
     }
     
     var isFavorite: Bool {
-        get{
-            return self.cocktail.isFavourite ?? false
-        }
-        set{
-            self.cocktail.isFavourite = newValue
-        }
+        self.cocktail.isFavourite
     }
     
     func toggleFavorite() {
-        self.cocktail.isFavourite = !(self.cocktail.isFavourite ?? false)
+        self.cocktail.isFavourite.toggle()
     }
 
 }

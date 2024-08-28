@@ -13,12 +13,11 @@ struct ContentView: View {
         cocktailListVM.load()
     }
     var body: some View {
-        let filteredCocktails = self.cocktailListVM.filteredCocktails()
-        
+    
         NavigationView{
                 VStack{
                     CocktailSegmentButton(cocktailType: self.$cocktailListVM.selectedCocktailType)
-                    CocktailListView(filteredCocktails: filteredCocktails, cocktailsTypeSelected: self.cocktailListVM.selectedTypeTitle())
+                    CocktailListView(cocktails: cocktailListVM.filteredCocktails, onFavoriteChanged: cocktailListVM.onFavoriteChanged(_:))
                 }
                 .navigationBarTitle(Text(self.cocktailListVM.selectedTypeTitle()), displayMode: .inline)
         }

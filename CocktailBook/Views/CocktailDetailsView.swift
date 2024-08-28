@@ -8,9 +8,13 @@
 import SwiftUI
 
 struct CocktailDetailsView: View {
-    @ObservedObject var cocktailViewModel: CocktailViewModel
+    @ObservedObject private var cocktailViewModel: CocktailDetailViewModel
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let cocktailsTypeSelected: String
+    
+    init(cocktail: Cocktail, onFavoriteChanged: @escaping (Cocktail) -> Void) {
+        cocktailViewModel = CocktailDetailViewModel(cocktail: cocktail, onFavoriteChanged: onFavoriteChanged)
+    }
+    
     var body: some View {
         NavigationView{
             VStack(alignment: .leading){
@@ -41,22 +45,21 @@ struct CocktailDetailsView: View {
     
             .navigationBarItems(
                 leading: Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 }) {
                     HStack{
                         Image(systemName: "arrow.left")
                             .imageScale(.large)
-                        Text(cocktailsTypeSelected)
+                        Text(cocktailViewModel.typeString)
                     }
                     
                 },
-                
                 trailing: Button(action: {
-                self.cocktailViewModel.toggleFavorite()
+                cocktailViewModel.toggleFavourite()
             }) {
-                Image(systemName: self.cocktailViewModel.isFavorite ? "heart.fill" : "heart")
+                Image(systemName: self.cocktailViewModel.isFavourite ? "heart.fill" : "heart")
                     .imageScale(.large)
-                    .foregroundColor(self.cocktailViewModel.isFavorite ? .red : .gray)
+                    .foregroundColor(self.cocktailViewModel.isFavourite ? .red : .gray)
             })
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -88,9 +91,10 @@ struct IngredientListView: View {
 }
 
 #Preview {
-    let cocktail = Cocktail(id: "123", name: "Pina Colada", type: .alcoholic, shortDescription: "", longDescription: "Bright fresh basil is muddled with sugar, then topped with lemonade and sparkly seltzer water for a bright non-alcoholic cocktail you can make in minutes. I don’t have to convince you that lemonade is a brilliant option for a party libation, but I do want to heavily suggest you try it with this extra-fresh twist.", preparationMinutes: 5, imageName: "mojito", ingredients: ["pineapple","vodka", "tender coconut"], isFavourite: false)
-    let cocktailVM = CocktailViewModel(cocktail: cocktail)
-    return CocktailDetailsView(cocktailViewModel: cocktailVM, cocktailsTypeSelected: cocktailVM.typeString)
+    let cocktail = Cocktail(id: "123", name: "Pina Colada", type: .alcoholic)
+    return CocktailDetailsView(cocktail: cocktail, onFavoriteChanged: { cocktail in
+        
+    })
 }
 
 
