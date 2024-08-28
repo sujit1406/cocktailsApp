@@ -13,13 +13,30 @@ struct ContentView: View {
         cocktailListVM.load()
     }
     var body: some View {
-    
+        
         NavigationView{
+            ZStack{
                 VStack{
                     CocktailSegmentButton(cocktailType: self.$cocktailListVM.selectedCocktailType)
                     CocktailListView(cocktails: cocktailListVM.filteredCocktails, onFavoriteChanged: cocktailListVM.onFavoriteChanged(_:))
+                    
                 }
-                .navigationBarTitle(Text(self.cocktailListVM.selectedTypeTitle()), displayMode: .inline)
+                if cocktailListVM.isLoading {
+                    ActivityIndicator(isAnimating: $cocktailListVM.isLoading, style: .large)
+                                        .frame(width: 50, height: 50)
+                }
+            }
+            .navigationBarTitle(Text(self.cocktailListVM.selectedTypeTitle()), displayMode: .inline)
+            .alert(isPresented: $cocktailListVM.showAlert) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(cocktailListVM.errorMessage),
+                    primaryButton: .default(Text("Retry")) {
+                        cocktailListVM.load()
+                    },
+                    secondaryButton: .cancel(Text("Dismiss"))
+                )
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -39,5 +56,19 @@ struct CocktailSegmentButton: View {
         }
         .pickerStyle(SegmentedPickerStyle())
         .padding()
+    }
+}
+
+struct ActivityIndicator: UIViewRepresentable {
+    @Binding var isAnimating: Bool
+    let style: UIActivityIndicatorView.Style
+
+    func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
+        let activityIndicator = UIActivityIndicatorView(style: style)
+        return activityIndicator
+    }
+
+    func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
+        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
     }
 }

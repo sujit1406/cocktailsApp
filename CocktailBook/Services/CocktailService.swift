@@ -8,13 +8,24 @@
 import Foundation
 
 class Cocktailservice {
-    let cocktailsAPI: CocktailsAPI = FakeCocktailsAPI()
+    static let shared = Cocktailservice()
+    let cocktailsAPI: CocktailsAPI = FakeCocktailsAPI(withFailure: .count(3))
     
-    func getCocktails(completion: @escaping (([Cocktail]?) -> Void)) {
+    private init() {
+    }
+    
+    func getCocktails(completion: @escaping ((Result<[Cocktail], Error>) -> Void)) {
         cocktailsAPI.fetchCocktails { result in
-            if case let .success(data) = result {
-                let cocktails = try? JSONDecoder().decode([Cocktail].self, from: data)
-                cocktails == nil ? completion(nil) : completion(cocktails)
+            switch result {
+            case .success(let data):
+                do {
+                    let cocktails = try JSONDecoder().decode([Cocktail].self, from: data)
+                    completion(.success(cocktails))
+                } catch {
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }

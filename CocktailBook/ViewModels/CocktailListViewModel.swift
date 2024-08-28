@@ -15,10 +15,14 @@ class CocktailListViewModel: ObservableObject {
     @Published var cocktails: [Cocktail] = [Cocktail]()
     @Published var favorites: [String] = []
     @Published var filteredCocktails: [Cocktail] = [Cocktail]()
+    @Published var showAlert: Bool = false
+    @Published var errorMessage: String = ""
+    @Published var isLoading: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
     func load() {
+        self.isLoading = true
         loadFavorites()
         fetchCocktails()
         observeTypeChange()
@@ -75,14 +79,22 @@ class CocktailListViewModel: ObservableObject {
     }
     
     private func fetchCocktails() {
-        Cocktailservice().getCocktails(completion: { cocktails in
-            if let cocktails = cocktails {
+        Cocktailservice.shared.getCocktails { result in
+            switch result {
+            case .success(let cocktails):
+                    DispatchQueue.main.async {
+                        self.cocktails = cocktails
+                        self.filterCocktails(cocktailType: .all)
+                        self.isLoading = false
+                    }
+            case .failure(let error):
                 DispatchQueue.main.async {
-                    self.cocktails = cocktails
-                    self.filterCocktails(cocktailType: .all)
+                    self.errorMessage = error.localizedDescription
+                    self.showAlert = true
+                    self.isLoading = false
                 }
             }
-        })
+        }
     }
     
     private func loadFavorites(){
