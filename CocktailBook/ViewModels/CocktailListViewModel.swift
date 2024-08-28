@@ -19,6 +19,7 @@ class CocktailListViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     func load() {
+        loadFavorites()
         fetchCocktails()
         observeTypeChange()
     }
@@ -40,6 +41,7 @@ class CocktailListViewModel: ObservableObject {
          } else {
              favorites.append(cocktail.id)
          }
+        saveFavorites(favorites: favorites)
         checkIfFavorite()
         sort()
      }
@@ -76,13 +78,20 @@ class CocktailListViewModel: ObservableObject {
         Cocktailservice().getCocktails(completion: { cocktails in
             if let cocktails = cocktails {
                 DispatchQueue.main.async {
-                    self.cocktails = cocktails.sorted(by: {
-                        $0.name < $1.name
-                    })
+                    self.cocktails = cocktails
                     self.filterCocktails(cocktailType: .all)
                 }
             }
         })
     }
+    
+    private func loadFavorites(){
+        favorites = CocktailsPersistenceService().loadFavorites() ?? []
+    }
+    
+    private func saveFavorites(favorites: [String]){
+        CocktailsPersistenceService().saveFavorites(favorites: favorites)
+    }
+
     
 }
