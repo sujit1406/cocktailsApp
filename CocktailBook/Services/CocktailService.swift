@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CocktailAPI
 
 class Cocktailservice {
     static let shared = Cocktailservice()
